@@ -1,0 +1,43 @@
+{
+  "id": "/",
+  "name": "TAJO Digital",
+  "short_name": "TAJO",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f7f9",
+  "theme_color": "#f6f7f9",
+  "description": "Sites, sistemas e soluções digitais para empresas em Afonso Cláudio - ES e todo o Brasil.",
+  "categories": [
+    "business",
+    "design",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/assets/images/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
