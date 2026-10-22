@@ -89,6 +89,9 @@ def prune_presence(conn: sqlite3.Connection, now: int) -> int:
 def security_headers(response):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("X-Permitted-Cross-Domain-Policies", "none")
+    response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+    response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
     if request.is_secure:
@@ -233,7 +236,7 @@ def not_found(_error):
 
 
 
-PAGES = ("criacao-de-sites", "marketing-digital", "sistemas", "atendimento", "solucoes", "comunidade")
+PAGES = ("criacao-de-sites", "marketing-digital", "sistemas", "atendimento", "solucoes", "comunidade", "tajo-control", "radio")
 
 @app.get("/")
 def index():
