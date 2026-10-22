@@ -110,3 +110,37 @@ if ('IntersectionObserver' in window && !reduceMotion.matches) {
   // Fail open if observation is interrupted by a browser or extension.
   window.setTimeout(revealAll, 8000);
 }
+
+
+// TAJO protection layer: deters casual copying; it is not DRM and cannot hide public client-side code.
+document.documentElement.classList.add('tajo-protected');
+document.body?.classList.add('radio-ready');
+(() => {
+  let timer;
+  const showProtectionNotice = () => {
+    let notice = document.querySelector('#tajoProtectionNotice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'tajoProtectionNotice';
+      notice.className = 'protection-notice';
+      notice.setAttribute('role','status');
+      notice.setAttribute('aria-live','polite');
+      notice.textContent = 'Conteúdo protegido pela TAJO Digital.';
+      document.body.appendChild(notice);
+    }
+    notice.classList.add('show');
+    clearTimeout(timer);
+    timer = setTimeout(() => notice.classList.remove('show'), 1600);
+  };
+  document.addEventListener('contextmenu', event => { event.preventDefault(); showProtectionNotice(); });
+  document.addEventListener('dragstart', event => {
+    if (event.target.closest('img, video, picture, svg')) event.preventDefault();
+  });
+  document.addEventListener('keydown', event => {
+    const key = event.key.toLowerCase();
+    const devShortcut = event.key === 'F12' ||
+      (event.ctrlKey && event.shiftKey && ['i','j','c'].includes(key)) ||
+      (event.ctrlKey && key === 'u');
+    if (devShortcut) { event.preventDefault(); showProtectionNotice(); }
+  });
+})();

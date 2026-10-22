@@ -1,0 +1,34 @@
+TAJO DIGITAL 3F — REGISTRO DE LICENÇA DE ÁUDIO
+
+Arquivo original: kulakovka-minimal-electronica-274978.mp3
+Arquivo no sistema: 04_kulakovka_minimal_electronica_274978.mp3
+Título: Minimal Electronica
+Criador/Contribuidor (inferido do nome do arquivo): Kulakovka
+ID presente no nome do arquivo: 274978
+Duração: 155.45 segundos
+SHA-256: c57429df83d0934ed5dfcbac5d63d4a881e2cbf1a0be21651436a066af124030
+Status no player: ATIVA
+
+Fonte declarada pelo usuário: Pixabay (https://pixabay.com/)
+URL específica da faixa no Pixabay: NÃO FORNECIDA NESTA CONVERSA
+
+Referência da licença:
+Pixabay Content License
+https://pixabay.com/service/license-summary/
+FAQ de música/licença:
+https://pixabay.com/service/faq/
+
+Resumo operacional (não substitui os termos completos do Pixabay):
+- Conteúdo do Pixabay pode ser usado gratuitamente, inclusive em projetos comerciais, sujeito aos usos proibidos da licença.
+- Atribuição ao autor/Pixabay não é obrigatória, embora seja apreciada.
+- O conteúdo pode ser adaptado e incorporado a um projeto criativo maior.
+- Não redistribuir ou revender a música isoladamente/como arquivo standalone.
+- Algumas faixas podem estar registradas em sistemas de Content ID.
+
+Uso pretendido neste projeto:
+Música ambiente dentro do site da TAJO Digital 3F, integrada à experiência do site por meio do TAJO Radio 24H. O player não oferece botão de download das faixas.
+
+Observação importante:
+Este arquivo registra a origem declarada e os dados técnicos do arquivo recebido. Como a URL específica da página da faixa não foi fornecida, este registro NÃO é um certificado individual emitido pelo Pixabay. Para prova mais forte, mantenha também a URL exata da página de download e qualquer certificado/recibo disponibilizado pelo Pixabay.
+
+Registro gerado em: 21/10/2026
