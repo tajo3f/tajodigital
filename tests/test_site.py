@@ -47,7 +47,7 @@ class SiteTests(unittest.TestCase):
             return original_open(*args, **kwargs)
         self.client.open=buffered_open
     def test_all_pages_and_seo(self):
-        routes=['/','/criacao-de-sites/','/marketing-digital/','/sistemas/','/atendimento/','/solucoes/','/comunidade/']
+        routes=['/','/criacao-de-sites/','/marketing-digital/','/sistemas/','/atendimento/','/solucoes/','/comunidade/','/tajo-control/','/radio/']
         titles=set()
         for route in routes:
             with self.subTest(route=route):
@@ -72,7 +72,7 @@ class SiteTests(unittest.TestCase):
     def test_sitemap(self):
         root=ET.fromstring(self.client.get('/sitemap.xml').data)
         urls=[e.text for e in root.iter('{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
-        self.assertEqual(len(urls),6)
+        self.assertEqual(len(urls),8)
         for url in urls:
             route=urlsplit(url).path
             self.assertEqual(self.client.get(route).status_code,200)
@@ -108,5 +108,21 @@ class SiteTests(unittest.TestCase):
                     text=file.read_text().lower()
                     for value in ['prompt studio','prompt-studio','tajopromptstudio','hotmart']:
                         self.assertNotIn(value,text,str(file))
+
+
+    def test_tajo_control_page(self):
+        response = self.client.get("/tajo-control/")
+        self.assertEqual(response.status_code, 200)
+        body = response.get_data(as_text=True)
+        self.assertIn("TAJO Control", body)
+        self.assertIn("https://kiwify.app/dnM0pTI", body)
+        self.assertIn("https://pay.kiwify.com.br/ACQu2Xg", body)
+
+    def test_radio_page_and_assets(self):
+        response = self.client.get("/radio/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("TAJO Rádio", response.get_data(as_text=True))
+        self.assertEqual(self.client.get("/assets/radio/tajo-radio.js").status_code, 200)
+        self.assertEqual(self.client.get("/assets/radio/audio/01_atlasaudio_innovation_522427.mp3").status_code, 200)
 
 if __name__=='__main__': unittest.main()
