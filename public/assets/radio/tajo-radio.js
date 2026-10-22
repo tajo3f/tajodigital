@@ -41,7 +41,7 @@
     "id": "151898",
     "file": "05_paulyudin_minimal_tech_151898.mp3",
     "duration": 160.183
-  },
+  }
 ];
   const AUDIO_BASE = new URL('audio/', scriptBase);
   const STORAGE_ENABLED = 'tajoRadioEnabled';
