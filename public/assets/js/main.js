@@ -96,25 +96,50 @@ updateScroll();
 const reduceMotion = window.matchMedia('(prefers-reduced-motion:reduce)');
 if ('IntersectionObserver' in window && !reduceMotion.matches) {
   const pending = new Set();
+  const revealSelector = [
+    '.section-head', '.section-intro', '.split-content > *', '.services-grid .service-card',
+    '.project', '.process-grid article', '.feature-grid article', '.region-list article',
+    '.proof-grid > *', '.about-grid > *', '.contact-grid > *', '.page-section > article',
+    '.product-shell > *', '.product-hero-grid > *', '.product-points > *', '.plans > *',
+    '.faq-list > *', '.community-layout > *', '.value-strip-inner > *'
+  ].join(',');
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    if(entry.isIntersecting){entry.target.classList.remove('reveal-pending');entry.target.classList.add('reveal-visible');pending.delete(entry.target);observer.unobserve(entry.target);}
-  }), {threshold:0.08});
-  document.querySelectorAll('.service-card,.project,.process-grid article,.feature-grid article,.region-list article').forEach(element => {
-    // Avoid concealing elements already on screen.
-    if(element.getBoundingClientRect().top > window.innerHeight){element.classList.add('reveal','reveal-pending');pending.add(element);observer.observe(element);}
+    if (entry.isIntersecting) {
+      entry.target.classList.remove('reveal-pending');
+      entry.target.classList.add('reveal-visible');
+      pending.delete(entry.target);
+      observer.unobserve(entry.target);
+    }
+  }), {threshold:0.12, rootMargin:'0px 0px -5% 0px'});
+
+  document.querySelectorAll(revealSelector).forEach((element, index) => {
+    // Content already visible on load stays immediately readable.
+    if (element.getBoundingClientRect().top > window.innerHeight * 0.92) {
+      element.classList.add('reveal','reveal-pending');
+      // A tiny stagger keeps grouped content from appearing all at once.
+      element.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
+      pending.add(element);
+      observer.observe(element);
+    }
   });
-  const revealAll = () => { pending.forEach(el => el.classList.remove('reveal-pending'));pending.clear();observer.disconnect(); };
-  document.addEventListener('focusin', event => { const el=event.target.closest('.reveal-pending');if(el){el.classList.remove('reveal-pending');pending.delete(el);observer.unobserve(el);} });
+
+  const revealAll = () => {
+    pending.forEach(el => el.classList.remove('reveal-pending'));
+    pending.clear(); observer.disconnect();
+  };
+  document.addEventListener('focusin', event => {
+    const el=event.target.closest('.reveal-pending');
+    if(el){el.classList.remove('reveal-pending');pending.delete(el);observer.unobserve(el);}
+  });
   window.addEventListener('beforeprint', revealAll);
-  if(reduceMotion.addEventListener)reduceMotion.addEventListener('change', e=>{if(e.matches)revealAll();});
+  if(reduceMotion.addEventListener) reduceMotion.addEventListener('change', e=>{if(e.matches)revealAll();});
   // Fail open if observation is interrupted by a browser or extension.
-  window.setTimeout(revealAll, 8000);
+  window.setTimeout(revealAll, 12000);
 }
 
 
 // TAJO protection layer: deters casual copying; it is not DRM and cannot hide public client-side code.
 document.documentElement.classList.add('tajo-protected');
-document.body?.classList.add('radio-ready');
 (() => {
   let timer;
   const showProtectionNotice = () => {

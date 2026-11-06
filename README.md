@@ -1,4 +1,4 @@
-# TAJO Digital — Institucional V4 • TAJO Control + TAJO Rádio 24H
+# TAJO Digital — Institucional V5 • TAJO Control
 
 Site oficial: https://tajodigital.com.br/
 
@@ -89,8 +89,6 @@ Os testes usam banco temporário e não enviam mensagens a clientes. O formulár
 - TAJO Control integrado à home e em `/tajo-control/`.
 - Página de vendas externa: https://kiwify.app/dnM0pTI
 - Checkout Kiwify: https://pay.kiwify.com.br/ACQu2Xg
-- TAJO Rádio 24H integrada a todas as páginas em `/assets/radio/`.
-- Página da rádio em `/radio/`.
 - Proteção de contexto (botão direito) e atalhos comuns de inspeção como camada de dissuasão.
 - Headers de segurança adicionais.
 

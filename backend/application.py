@@ -236,7 +236,7 @@ def not_found(_error):
 
 
 
-PAGES = ("criacao-de-sites", "marketing-digital", "sistemas", "atendimento", "solucoes", "comunidade", "tajo-control", "radio")
+PAGES = ("criacao-de-sites", "marketing-digital", "sistemas", "atendimento", "solucoes", "comunidade", "tajo-control", "diagnostico")
 
 @app.get("/")
 def index():

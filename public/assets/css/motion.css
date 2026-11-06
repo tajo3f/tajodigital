@@ -1,3 +1,19 @@
-/* Progressive enhancement: nothing depends on animation to be readable. */
-@media(prefers-reduced-motion:no-preference){.reveal-pending{opacity:0;transform:translateY(18px)}.reveal{transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}.reveal-visible{opacity:1;transform:none}.hero-showcase{animation:arrive .7s ease both}@keyframes arrive{from{opacity:.5;translate:0 10px}to{opacity:1;translate:0 0}}.service-card{transition:border-color .2s}.service-card:hover{border-color:var(--blue)}.case-links img{transition:box-shadow .25s}.case-links a:hover img{box-shadow:0 10px 25px #14315814}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.reveal-pending{opacity:1;transform:none}.hero-showcase{transform:none}}
+/* Motion: subtle, calm reveals while the visitor moves through the page. */
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+@media(prefers-reduced-motion:no-preference){
+  .reveal-pending{opacity:0;transform:translateY(26px)}
+  .reveal{transition:opacity 1.05s cubic-bezier(.22,.61,.36,1),transform 1.05s cubic-bezier(.22,.61,.36,1);will-change:opacity,transform}
+  .reveal-visible{opacity:1;transform:translateY(0)}
+  .hero-showcase{animation:arrive .95s cubic-bezier(.22,.61,.36,1) both}
+  @keyframes arrive{from{opacity:.35;translate:0 16px}to{opacity:1;translate:0 0}}
+  .service-card{transition:border-color .28s ease,transform .35s ease}
+  .service-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+  .case-links img{transition:box-shadow .35s ease,transform .35s ease}
+  .case-links a:hover img{box-shadow:0 10px 25px #14315814;transform:translateY(-2px)}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  .reveal-pending{opacity:1;transform:none}
+  .hero-showcase{transform:none}
+}
