@@ -30,10 +30,11 @@
       {label:'Sim, temos uma apresentação clara e padronizada', scores:{}},
       {label:'Em parte, ainda podemos melhorar', scores:{marketing:2}},
       {label:'Não temos uma apresentação bem definida', scores:{marketing:3}} ]},
-    { topic:'PRIORIDADE', title:'Qual é o principal objetivo da empresa agora?', help:'Não existe resposta certa. Escolha o que faria mais diferença neste momento.', options:[
-      {label:'Ser encontrada e apresentar melhor os serviços', scores:{site:2}},
-      {label:'Organizar atendimento, pedidos ou orçamentos', scores:{systems:2}},
-      {label:'Divulgar melhor e ter comunicação mais consistente', scores:{marketing:2}} ]}
+    { topic:'OBJETIVO', title:'Qual é o principal objetivo da empresa agora?', help:'Ter um objetivo de crescimento não significa que exista um problema. Esta escolha ajuda a contextualizar o resultado.', options:[
+      {label:'Ser encontrada e apresentar melhor os serviços', goal:'site'},
+      {label:'Organizar atendimento, pedidos ou orçamentos', goal:'systems'},
+      {label:'Divulgar melhor e ter comunicação mais consistente', goal:'marketing'},
+      {label:'Manter o que já funciona e acompanhar resultados', goal:'maintain'} ]}
   ];
   const services = {
     site: {
@@ -54,11 +55,17 @@
       first:'Escolha três serviços ou produtos prioritários e prepare uma publicação clara para cada um, com benefício, informação útil e próximo passo.',
       actions:['Defina a mensagem principal que diferencia a empresa.','Padronize os elementos visuais e os dados de contato.','Planeje uma frequência de divulgação que a equipe consiga manter.']
     },
+    optimize: {
+      title:'Pequenos ajustes antes de novos investimentos',
+      description:'Suas respostas apontam pontos isolados de aperfeiçoamento, mas não sustentam uma recomendação de contratar um novo serviço neste momento.',
+      first:'Revise o ponto identificado, teste um ajuste simples e observe o resultado antes de considerar uma nova ferramenta.',
+      actions:['Escolha um ponto específico de melhoria.','Faça uma mudança simples que possa ser observada.','Reavalie se existe uma dificuldade recorrente antes de investir.']
+    },
     maintain: {
-      title:'Consolidar o que já funciona',
-      description:'Suas respostas indicam uma base organizada. O melhor próximo passo pode ser revisar detalhes, ouvir clientes e acompanhar o que realmente gera contatos antes de investir em novas ferramentas.',
-      first:'Peça feedback a três clientes recentes sobre como encontraram a empresa e se foi fácil obter as informações de que precisavam.',
-      actions:['Confira se os dados de contato e horários estão corretos em todos os canais.','Observe quais canais trazem contatos qualificados.','Aprimore apenas os pontos que apresentarem dificuldades reais.']
+      title:'Uma base digital bem estruturada',
+      description:'Pelas suas respostas, a empresa já cuida das principais frentes avaliadas. Não identificamos uma necessidade clara de novo site, sistema ou serviço de comunicação neste questionário.',
+      first:'Acompanhe de onde vêm os contatos e peça feedback a três clientes recentes para descobrir se existe algum atrito real na experiência deles.',
+      actions:['Mantenha dados de contato e horários atualizados.','Observe quais canais trazem contatos qualificados.','Invista apenas quando houver uma oportunidade concreta ou um objetivo bem definido.']
     }
   };
   const $ = (id) => document.getElementById(id);
@@ -91,19 +98,47 @@
     $('diagNext').disabled=state.answers[state.index]===null;
     $('diagQuestionTitle').focus({preventScroll:true});
   }
+  // Critério transparente: as sete primeiras respostas trazem indícios de dificuldade.
+  // A oitava registra um objetivo, jamais uma necessidade ou pontuação de problema.
+  // 0 = sem dificuldade relatada; 1-2 = ajuste pontual; 3+ = área que merece avaliação.
   function calculate(){
     const scores={site:0,systems:0,marketing:0};
-    questions.forEach((q,i)=>{const option=q.options[state.answers[i]]; if(option) Object.entries(option.scores).forEach(([key,value])=>scores[key]+=value);});
-    const ranking=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-    // No artificial percentage or claimed business losses. This is a relative, rule-based recommendation.
-    const primary=ranking[0][1]===0?'maintain':ranking[0][0];
-    const secondary=ranking.filter(([key,value])=>value>0&&key!==primary).map(([key])=>key);
-    return {primary,secondary,scores};
+    questions.slice(0,7).forEach((q,i)=>{
+      const option=q.options[state.answers[i]];
+      if(option) Object.entries(option.scores || {}).forEach(([key,value])=>{scores[key]+=value;});
+    });
+    const goal=questions[7].options[state.answers[7]]?.goal || 'maintain';
+    const ranking=Object.entries(scores).sort((a,b)=>b[1]-a[1] || (a[0]===goal?-1:b[0]===goal?1:0));
+    const [focus,highest]=ranking[0];
+    const primary=highest===0?'maintain':highest<3?'optimize':focus;
+    const secondary=primary==='maintain'||primary==='optimize'?[]:ranking.filter(([key,value])=>value>=3&&key!==focus).map(([key])=>key);
+    const strengths=[
+      'Site próprio atualizado',
+      'Informações de produtos ou serviços organizadas',
+      'Dados públicos atualizados',
+      'Processo claro de pedidos e orçamentos',
+      'Poucas perguntas repetidas no atendimento',
+      'Rotina consistente de divulgação',
+      'Comunicação clara e padronizada'
+    ].filter((_,i)=>state.answers[i]===0);
+    return {primary,secondary,scores,goal,focus,strengths};
+  }
+  function resultService(){
+    const {primary,focus}=state.result;
+    if(primary!=='optimize') return services[primary];
+    return {
+      ...services.optimize,
+      first:services[focus].first,
+      actions:services[focus].actions
+    };
   }
   function getSummary(){
     const {primary,secondary}=state.result;
-    const heading=services[primary].title;
-    const lines=[`RAIO-X DIGITAL T3F — TAJO DIGITAL`,state.business?`Empresa: ${state.business}`:'Empresa: não informada',state.segment?`Segmento: ${state.segment}`:null,`Prioridade sugerida: ${heading}`,`Primeiro passo: ${services[primary].first}`];
+    const service=resultService();
+    const heading=service.title;
+    const verdict=primary==='maintain'?'Situação identificada: boa base relatada':primary==='optimize'?'Situação identificada: ajustes pontuais':'Área para avaliação';
+    const goal=questions[7].options[state.answers[7]].label;
+    const lines=[`RAIO-X DIGITAL T3F — TAJO DIGITAL`,state.business?`Empresa: ${state.business}`:'Empresa: não informada',state.segment?`Segmento: ${state.segment}`:null,verdict,`Resultado: ${heading}`,`Objetivo informado: ${goal}`,`Primeiro passo: ${service.first}`];
     if(secondary.length) lines.push(`Outras áreas para observar: ${secondary.map(k=>services[k].title).join('; ')}`);
     lines.push('Respostas:');
     questions.forEach((q,i)=>lines.push(`${i+1}. ${q.title} — ${q.options[state.answers[i]].label}`));
@@ -111,20 +146,39 @@
   }
   function renderResult(){
     state.result=calculate();
-    const {primary,secondary}=state.result;
-    const service=services[primary];
-    const name=state.business?`da ${state.business}`:'do seu negócio';
-    $('diagResultTitle').textContent=primary==='maintain'?`Uma boa base para continuar evoluindo.`:`Encontramos uma prioridade para a presença digital ${name}.`;
-    $('diagResultLead').textContent=primary==='maintain'?'Pelas suas respostas, vale consolidar o que já funciona antes de iniciar um novo projeto.':'Com base nas suas respostas, esta é uma área que merece atenção primeiro. O resultado não substitui uma análise humana.';
+    const {primary,secondary,goal,strengths}=state.result;
+    const service=resultService();
+    const subject=state.business?`a empresa ${state.business}`:'seu negócio';
+    const name=state.business?`da empresa ${state.business}`:'do seu negócio';
+    const isMaintain=primary==='maintain';
+    const isOptimize=primary==='optimize';
+    const goalLabel=questions[7].options[state.answers[7]].label;
+    $('diagResultTitle').textContent=isMaintain?`Pelas suas respostas, ${subject} apresenta uma boa estrutura digital.`:
+      isOptimize?`Alguns ajustes podem deixar a presença digital ${name} ainda melhor.`:
+      `Encontramos uma área para avaliar na presença digital ${name}.`;
+    $('diagResultLead').textContent=isMaintain?
+      `Você relatou bons processos nas áreas avaliadas. Seu objetivo é “${goalLabel}”, mas ter essa meta não significa que precise contratar algo agora.`:
+      isOptimize?
+      `Foram identificados apenas pontos isolados de melhoria. Seu objetivo é “${goalLabel}”; vale testar ajustes simples antes de investir.`:
+      `Há sinais de atenção nas respostas. Seu objetivo é “${goalLabel}”. A recomendação considera as dificuldades relatadas, não apenas essa meta.`;
+    $('diagResultTag').textContent=isMaintain?'PONTO FORTE IDENTIFICADO':isOptimize?'MELHORIA PONTUAL':'PRIORIDADE PARA AVALIAR';
+    $('diagResultIcon').textContent=isMaintain?'✓':isOptimize?'↗':'↗';
     $('diagServiceTitle').textContent=service.title;
     $('diagServiceDescription').textContent=service.description;
     $('diagFirstStep').textContent=service.first;
+    $('diagFirstStepLabel').textContent=isMaintain?'Como continuar evoluindo':isOptimize?'Primeiro ajuste prático':'Primeiro passo prático';
+    $('diagRecommendationsTitle').textContent=isMaintain?'Pontos fortes relatados':isOptimize?'Pequenos ajustes sugeridos':'O que vale observar';
     const ol=$('diagRecommendations');ol.replaceChildren();
-    service.actions.forEach((a)=>{const li=document.createElement('li');li.textContent=a;ol.append(li);});
-    if(secondary.length){const li=document.createElement('li');li.textContent=`Depois, considere também: ${secondary.slice(0,2).map(k=>services[k].title.toLowerCase()).join(' e ')}.`;ol.append(li);}
+    const recommendations=isMaintain?strengths.slice(0,4):service.actions;
+    recommendations.forEach((item)=>{const li=document.createElement('li');li.textContent=item;ol.append(li);});
+    if(secondary.length){const li=document.createElement('li');li.textContent=`Outra frente que merece avaliação: ${secondary.slice(0,2).map(k=>services[k].title.toLowerCase()).join(' e ')}.`;ol.append(li);}
     const highlights=[0,3,7].map(i=>`${questions[i].topic}: ${questions[i].options[state.answers[i]].label}`).join('\n');
-    const message=`Olá, João! Fiz o RAIO-X Digital T3F no site da TAJO e gostaria de conversar sobre meu resultado.\n\nEmpresa: ${state.business||'Não informada'}\nSegmento: ${state.segment||'Não informado'}\nPrioridade: ${service.title}\n\n${highlights}\n\nPodemos avaliar o próximo passo para meu negócio?`;
+    const request=isMaintain?'Gostaria de tirar uma dúvida sobre a evolução da minha empresa.':
+      isOptimize?'Gostaria de conversar sobre pequenos ajustes identificados no resultado.':
+      'Gostaria de avaliar os próximos passos para meu negócio.';
+    const message=`Olá, João! Fiz o RAIO-X Digital T3F no site da TAJO. ${request}\n\nEmpresa: ${state.business||'Não informada'}\nSegmento: ${state.segment||'Não informado'}\nResultado: ${service.title}\nObjetivo: ${goalLabel}\n\n${highlights}`;
     $('diagWhatsApp').href=`https://wa.me/5527999639610?text=${encodeURIComponent(message)}`;
+    $('diagWhatsAppText').textContent=isMaintain?'Tirar uma dúvida com a TAJO':isOptimize?'Conversar sobre meus ajustes':'Conversar com a TAJO sobre meu resultado';
     show('result');$('diagResultTitle').focus({preventScroll:true});
     $('diagProgress').setAttribute('aria-valuenow','8');
     document.getElementById('diagApp').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
